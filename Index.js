@@ -6,26 +6,35 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Verificação simples
 app.get("/", (req, res) => {
-  res.json({ status: "OK", message: "Stream Proxy ativo!" });
+  res.json({ status: "OK", message: "StreamTape Proxy ativo e funcional 🚀" });
 });
 
-// Proxy simples para Streamtape API
-app.get("/api", async (req, res) => {
+// Endpoint para upload remoto no Streamtape
+app.get("/upload", async (req, res) => {
   try {
-    const { url } = req.query;
-    if (!url) return res.status(400).json({ error: "URL é obrigatória" });
+    const { login, key, url, name = "", folder = "", headers = "" } = req.query;
 
-    // Faz a requisição direta ao Streamtape
-    const response = await fetch(url, {
+    if (!login || !key || !url) {
+      return res.status(400).json({
+        error: "Parâmetros obrigatórios: login, key e url."
+      });
+    }
+
+    // Monta a URL para a API do Streamtape
+    const apiUrl = `https://api.streamtape.com/remotedl/add?login=${encodeURIComponent(login)}&key=${encodeURIComponent(key)}&url=${encodeURIComponent(url)}&folder=${encodeURIComponent(folder)}&headers=${encodeURIComponent(headers)}&name=${encodeURIComponent(name)}`;
+
+    // Faz a requisição
+    const response = await fetch(apiUrl, {
       headers: {
         "User-Agent": "Mozilla/5.0",
         "Accept": "application/json, text/plain, */*"
       }
     });
 
-    const text = await response.text();
-    res.send(text);
+    const result = await response.text();
+    res.send(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

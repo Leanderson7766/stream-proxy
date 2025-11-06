@@ -31,5 +31,5 @@ app.get("/upload", async (req, res) => {
 });
 
 // 🔹 Configuração da porta Render
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, "0.0.0.0", () => console.log(`🚀 Proxy rodando na porta ${PORT}`));
